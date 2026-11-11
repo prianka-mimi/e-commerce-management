@@ -229,19 +229,6 @@ export default function UsersPage() {
                 />
             </div>
 
-            {resetNotice && (
-                <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold flex items-center justify-between">
-                    <span>{resetNotice}</span>
-                    <button
-                        type="button"
-                        onClick={() => setResetNotice(null)}
-                        className="text-emerald-600 hover:text-emerald-900 font-bold"
-                    >
-                        Dismiss
-                    </button>
-                </div>
-            )}
-
             {isLoading && <Spinner />}
             {error && <Alert type="error" message="Failed to load users." />}
             {actionError && <Alert type="error" message={actionError} />}
