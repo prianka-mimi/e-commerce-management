@@ -85,18 +85,18 @@ class ShopProduct extends Model
     public function effectiveThumbnail(): string
     {
         if ($this->thumbnail) {
-            return str_starts_with($this->thumbnail, 'http')
+            return str_starts_with($this->thumbnail, 'http') || str_starts_with($this->thumbnail, '/')
                 ? $this->thumbnail
                 : '/storage/'.ltrim($this->thumbnail, '/');
         }
 
         if ($this->product?->photo) {
-            return str_starts_with($this->product->photo, 'http')
+            return str_starts_with($this->product->photo, 'http') || str_starts_with($this->product->photo, '/')
                 ? $this->product->photo
                 : '/storage/'.ltrim($this->product->photo, '/');
         }
 
-        return 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80';
+        return '/img/default.png';
     }
 
     /**

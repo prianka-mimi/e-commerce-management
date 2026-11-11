@@ -185,6 +185,22 @@ class MarketplaceWorkflowTest extends TestCase
         $owner = $this->createUserWithRole('Owner');
         $shop = $this->createShopForOwner($owner, 'Upload Merchant');
 
+        // Entities without uploaded images resolve to /img/default.png across the project
+        $this->assertSame('/img/default.png', $shop->logoUrl());
+
+        $noImageProduct = $this->actingAs($admin, 'sanctum')->postJson('/ajax/product', [
+            'name' => 'Default Image Item',
+            'sku' => 'DEF-IMG-01',
+            'price' => '29.00',
+            'stock' => '10',
+        ])->assertStatus(201);
+        $noImageProduct->assertJsonPath('data.photo', '/img/default.png');
+
+        $noImageListing = $this->actingAs($owner, 'sanctum')->postJson('/ajax/shop-product', [
+            'product_id' => $noImageProduct->json('data.id'),
+        ])->assertStatus(201);
+        $noImageListing->assertJsonPath('data.thumbnail', '/img/default.png');
+
         // Shop creation with multi-MB logo upload
         $logoFile = UploadedFile::fake()->create('shop-banner.png', 3072, 'image/png');
         $shopRes = $this->actingAs($admin, 'sanctum')->post('/ajax/company', [

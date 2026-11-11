@@ -220,7 +220,7 @@ class ImageService
     /**
      * Return public URL for the given image path.
      */
-    public function url(?string $path, string $fallback = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80'): string
+    public function url(?string $path, string $fallback = '/img/default.png'): string
     {
         if (empty($path)) {
             return $fallback;

@@ -107,11 +107,11 @@ class Company extends Model
     public function logoUrl(): string
     {
         if ($this->logo) {
-            return str_starts_with($this->logo, 'http')
+            return str_starts_with($this->logo, 'http') || str_starts_with($this->logo, '/')
                 ? $this->logo
                 : '/storage/'.ltrim($this->logo, '/');
         }
 
-        return 'https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=400&auto=format&fit=crop&q=80';
+        return '/img/default.png';
     }
 }

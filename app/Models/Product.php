@@ -91,11 +91,11 @@ class Product extends Model
     public function photoUrl(): string
     {
         if ($this->photo) {
-            return str_starts_with($this->photo, 'http')
+            return str_starts_with($this->photo, 'http') || str_starts_with($this->photo, '/')
                 ? $this->photo
                 : '/storage/'.ltrim($this->photo, '/');
         }
 
-        return 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80';
+        return '/img/default.png';
     }
 }

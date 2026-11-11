@@ -21,7 +21,7 @@ export function SafeImage({
         setIsLoaded(false);
     }, [src]);
 
-    const showFallback = !src || hasError;
+    const showFallback = !src || src === '/img/default.png' || hasError;
 
     if (showFallback) {
         if (fallbackType === 'user') {
