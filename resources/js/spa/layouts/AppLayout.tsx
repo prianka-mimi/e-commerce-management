@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
+import { getApiErrorMessage } from '@/services/http';
 import { SafeImage } from '@/components/SafeImage';
 import { AccountSettingsModal } from '@/components/AccountSettingsModal';
 import { ArrowRightIcon, ExternalLinkIcon } from '@/components/Icons';
@@ -23,6 +25,7 @@ const ownerLinks = [
 
 export default function AppLayout() {
     const { user, logout, hasRole } = useAuth();
+    const { showToast } = useToast();
     const navigate = useNavigate();
     const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
 
@@ -30,8 +33,13 @@ export default function AppLayout() {
     const isAdmin = hasRole('Admin');
 
     async function handleLogout() {
-        await logout();
-        navigate('/login');
+        try {
+            await logout();
+            showToast('Signed out successfully.', 'info');
+            navigate('/login');
+        } catch (err: unknown) {
+            showToast(getApiErrorMessage(err, 'Failed to sign out.'), 'error');
+        }
     }
 
     return (
