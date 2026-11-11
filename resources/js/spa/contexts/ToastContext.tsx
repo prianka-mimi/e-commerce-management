@@ -68,7 +68,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
         toasts.length > 0 ? (
             <div
                 aria-live="polite"
-                className="fixed top-5 right-5 z-[70] flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0"
+                className="fixed bottom-5 right-5 z-[70] flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0"
             >
                 {toasts.map((toast) => {
                     const styles = getStyleClasses(toast.type);
@@ -76,7 +76,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
                         <div
                             key={toast.id}
                             role="status"
-                            className={`pointer-events-auto flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-xl border text-sm font-semibold animate-in fade-in slide-in-from-top-3 duration-200 ${styles.wrapper}`}
+                            className={`pointer-events-auto flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-xl border text-sm font-semibold animate-in fade-in slide-in-from-bottom-3 duration-200 ${styles.wrapper}`}
                         >
                             <div
                                 className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${styles.iconBg}`}
