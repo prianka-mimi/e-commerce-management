@@ -147,11 +147,16 @@ class AuthService
             ]
         );
 
-        $this->deliverOtpEmail(
-            $user->email,
-            'Password Reset OTP',
-            "Hello {$user->name},\n\nYour 6-digit password reset OTP is: {$otp}\nThis code will expire in ".self::OTP_TTL_MINUTES.' minutes.'
-        );
+        try {
+            $this->deliverOtpEmail(
+                $user->email,
+                'Password Reset OTP',
+                "Hello {$user->name},\n\nYour 6-digit password reset OTP is: {$otp}\nThis code will expire in ".self::OTP_TTL_MINUTES.' minutes.'
+            );
+        } catch (Throwable $e) {
+            DB::table('password_reset_tokens')->where('email', $normalized)->delete();
+            throw $e;
+        }
 
         return $this->exposeDevOtp($otp);
     }
@@ -239,17 +244,23 @@ class AuthService
         }
 
         $otp = $this->generateOtp();
+        $cacheKey = $this->emailChangeCacheKey($user->id);
         Cache::put(
-            $this->emailChangeCacheKey($user->id),
+            $cacheKey,
             ['hash' => Hash::make($otp)],
             now()->addMinutes(self::OTP_TTL_MINUTES)
         );
 
-        $this->deliverOtpEmail(
-            $user->email,
-            'Email Change Verification OTP',
-            "Hello {$user->name},\n\nYour 6-digit OTP to verify changing your account email is: {$otp}\nThis code will expire in ".self::OTP_TTL_MINUTES.' minutes.'
-        );
+        try {
+            $this->deliverOtpEmail(
+                $user->email,
+                'Email Change Verification OTP',
+                "Hello {$user->name},\n\nYour 6-digit OTP to verify changing your account email is: {$otp}\nThis code will expire in ".self::OTP_TTL_MINUTES.' minutes.'
+            );
+        } catch (Throwable $e) {
+            Cache::forget($cacheKey);
+            throw $e;
+        }
 
         return $this->exposeDevOtp($otp);
     }
@@ -307,7 +318,15 @@ class AuthService
                 $message->to($recipient)->subject($subject);
             });
         } catch (Throwable $e) {
-            Log::warning('OTP email delivery failed', ['recipient' => $recipient, 'error' => $e->getMessage()]);
+            Log::error('OTP email delivery failed', [
+                'recipient' => $recipient,
+                'mailer' => config('mail.default'),
+                'error' => $e->getMessage(),
+            ]);
+
+            throw ValidationException::withMessages([
+                'email' => ['Unable to send verification email. Please verify your mail configuration and try again.'],
+            ]);
         }
     }
 

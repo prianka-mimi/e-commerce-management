@@ -9,9 +9,13 @@ use App\Models\ShopProduct;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use RuntimeException;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
@@ -699,5 +703,68 @@ class MarketplaceWorkflowTest extends TestCase
             'password' => 'resetpass999',
         ])->assertStatus(200)
             ->assertJsonPath('data.user.name', 'Updated Buyer Name');
+    }
+
+    public function test_otp_emails_dispatch_via_mailer_and_roll_back_on_transport_failure(): void
+    {
+        $customer = $this->createUserWithRole('Customer', null, [
+            'name' => 'Mailer Buyer',
+            'email' => 'mailer@example.com',
+        ]);
+
+        config(['mail.default' => 'array']);
+        Mail::mailer('array')->getSymfonyTransport()->flush();
+
+        $forgotRes = $this->postJson('/ajax/forgot-password', [
+            'email' => 'mailer@example.com',
+        ])->assertStatus(200);
+
+        $forgotOtp = (string) $forgotRes->json('data.local_otp');
+        $sentForgot = Mail::mailer('array')->getSymfonyTransport()->messages();
+        $this->assertCount(1, $sentForgot);
+        $this->assertStringContainsString($forgotOtp, $sentForgot[0]->getOriginalMessage()->getTextBody());
+        $this->assertSame('Password Reset OTP', $sentForgot[0]->getOriginalMessage()->getSubject());
+
+        Mail::mailer('array')->getSymfonyTransport()->flush();
+
+        $emailOtpRes = $this->actingAs($customer, 'sanctum')->postJson('/ajax/email-change/send-otp', [
+            'current_email' => 'mailer@example.com',
+        ])->assertStatus(200);
+
+        $emailOtp = (string) $emailOtpRes->json('data.local_otp');
+        $sentEmailChange = Mail::mailer('array')->getSymfonyTransport()->messages();
+        $this->assertCount(1, $sentEmailChange);
+        $this->assertStringContainsString($emailOtp, $sentEmailChange[0]->getOriginalMessage()->getTextBody());
+        $this->assertSame('Email Change Verification OTP', $sentEmailChange[0]->getOriginalMessage()->getSubject());
+
+        // When configured to a real mailer (e.g. smtp), OTP is never leaked in API payload and transport failure rolls back
+        DB::table('password_reset_tokens')->delete();
+        Cache::forget("email_change_otp:{$customer->id}");
+        config(['mail.default' => 'smtp']);
+
+        Mail::shouldReceive('raw')
+            ->once()
+            ->andReturnNull();
+
+        $smtpSuccess = $this->postJson('/ajax/forgot-password', [
+            'email' => 'mailer@example.com',
+        ])->assertStatus(200);
+        $this->assertNull($smtpSuccess->json('data.local_otp'));
+
+        Mail::shouldReceive('raw')
+            ->twice()
+            ->andThrow(new RuntimeException('SMTP connection refused'));
+
+        $this->postJson('/ajax/forgot-password', [
+            'email' => 'mailer@example.com',
+        ])->assertStatus(422)
+            ->assertJsonValidationErrors(['email']);
+        $this->assertNull(DB::table('password_reset_tokens')->where('email', 'mailer@example.com')->first());
+
+        $this->actingAs($customer, 'sanctum')->postJson('/ajax/email-change/send-otp', [
+            'current_email' => 'mailer@example.com',
+        ])->assertStatus(422)
+            ->assertJsonValidationErrors(['email']);
+        $this->assertNull(Cache::get("email_change_otp:{$customer->id}"));
     }
 }

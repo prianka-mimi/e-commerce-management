@@ -49,6 +49,7 @@ export function AccountSettingsModal({
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showOldPassword, setShowOldPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordError, setPasswordError] = useState<string | null>(null);
 
     const [isSigningOut, setIsSigningOut] = useState(false);
@@ -72,6 +73,9 @@ export function AccountSettingsModal({
         setOldPassword('');
         setNewPassword('');
         setConfirmPassword('');
+        setShowOldPassword(false);
+        setShowNewPassword(false);
+        setShowConfirmPassword(false);
         setPasswordError(null);
     }, [isOpen, user, initialTab]);
 
@@ -576,15 +580,29 @@ export function AccountSettingsModal({
                             <label className="block text-xs font-semibold text-slate-700 mb-1">
                                 Confirm New Password *
                             </label>
-                            <input
-                                type={showNewPassword ? 'text' : 'password'}
-                                required
-                                minLength={8}
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                placeholder="Repeat new password"
-                                className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                            />
+                            <div className="relative">
+                                <input
+                                    type={showConfirmPassword ? 'text' : 'password'}
+                                    required
+                                    minLength={8}
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    placeholder="Repeat new password"
+                                    className="w-full pl-3.5 pr-10 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
+                                    title={showConfirmPassword ? 'Hide password' : 'Show password'}
+                                >
+                                    {showConfirmPassword ? (
+                                        <EyeOffIcon className="w-4 h-4" />
+                                    ) : (
+                                        <EyeIcon className="w-4 h-4" />
+                                    )}
+                                </button>
+                            </div>
                         </div>
 
                         <div className="pt-4 border-t border-slate-200 flex items-center justify-between gap-3">

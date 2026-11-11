@@ -139,6 +139,8 @@ class AuthController extends Controller
                 $payload,
                 'If an account matches that email, a 6-digit verification OTP has been sent.'
             );
+        } catch (ValidationException $e) {
+            return ApiResponse::error($e->getMessage(), 422, $e->errors());
         } catch (Throwable $e) {
             app_error_log('FORGOT_PASSWORD_OTP_FAILED', $e);
 

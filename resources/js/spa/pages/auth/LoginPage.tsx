@@ -46,6 +46,7 @@ export default function LoginPage() {
     const [resetToken, setResetToken] = useState('');
     const [localOtp, setLocalOtp] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -244,6 +245,8 @@ export default function LoginPage() {
         setOtp('');
         setResetToken('');
         setLocalOtp(null);
+        setShowPassword(false);
+        setShowConfirmPassword(false);
 
         const nextParams = new URLSearchParams(searchParams);
         nextParams.delete('token');
@@ -792,16 +795,30 @@ export default function LoginPage() {
                                 >
                                     Confirm New Password *
                                 </label>
-                                <input
-                                    id="reset-password-confirm"
-                                    type={showPassword ? 'text' : 'password'}
-                                    required
-                                    minLength={8}
-                                    placeholder="Confirm new password"
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-900 font-medium"
-                                />
+                                <div className="relative">
+                                    <input
+                                        id="reset-password-confirm"
+                                        type={showConfirmPassword ? 'text' : 'password'}
+                                        required
+                                        minLength={8}
+                                        placeholder="Confirm new password"
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-900 font-medium"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
+                                        title={showConfirmPassword ? 'Hide password' : 'Show password'}
+                                    >
+                                        {showConfirmPassword ? (
+                                            <EyeOffIcon className="w-4 h-4" />
+                                        ) : (
+                                            <EyeIcon className="w-4 h-4" />
+                                        )}
+                                    </button>
+                                </div>
                             </div>
 
                             <button
