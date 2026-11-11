@@ -436,7 +436,7 @@ export default function ProductsPage() {
                     <div className="grid grid-cols-3 gap-4">
                         <div>
                             <label className="block text-xs font-semibold text-slate-700 mb-1">
-                                Base Price ($) *
+                                Selling Price ($) *
                             </label>
                             <input
                                 type="number"
@@ -449,7 +449,7 @@ export default function ProductsPage() {
                         </div>
                         <div>
                             <label className="block text-xs font-semibold text-slate-700 mb-1">
-                                Cost ($)
+                                Wholesale Cost (Optional)
                             </label>
                             <input
                                 type="number"

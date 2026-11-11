@@ -67,7 +67,7 @@ export function ImageUploadField({
                             alt="Selected preview"
                             className="w-full h-full object-contain rounded-lg"
                         />
-                    ) : previewSrc ? (
+                    ) : previewSrc || fallbackType !== 'user' ? (
                         <SafeImage
                             src={previewSrc}
                             alt={label}

@@ -18,7 +18,6 @@ export default function CreateProductPage() {
     const [name, setName] = useState('');
     const [sku, setSku] = useState(`SKU-${Date.now().toString().slice(-6)}`);
     const [price, setPrice] = useState('');
-    const [cost, setCost] = useState('');
     const [stock, setStock] = useState('100');
     const [description, setDescription] = useState('');
     const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -41,7 +40,6 @@ export default function CreateProductPage() {
             fd.append('name', name);
             fd.append('sku', sku);
             fd.append('price', price);
-            if (cost) fd.append('cost', cost);
             fd.append('stock', stock);
             fd.append('status', '1');
             if (description) fd.append('description', description);
@@ -141,7 +139,7 @@ export default function CreateProductPage() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-xs font-medium text-slate-700 mb-1">
                                 Price ($) *
@@ -154,19 +152,6 @@ export default function CreateProductPage() {
                                 onChange={(e) => setPrice(e.target.value)}
                                 className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
                                 placeholder="49.99"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-xs font-medium text-slate-700 mb-1">
-                                Cost ($)
-                            </label>
-                            <input
-                                type="number"
-                                step="0.01"
-                                value={cost}
-                                onChange={(e) => setCost(e.target.value)}
-                                className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
-                                placeholder="25.00"
                             />
                         </div>
                         <div>
