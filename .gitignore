@@ -1,14 +1,11 @@
-.env
 *.log
 .env.backup
-.env.production
 .phpactor.json
 .phpunit.result.cache
 /.fleet
 /.idea
 /.nova
 /.phpunit.cache
-/.vscode
 /.zed
 /auth.json
 /node_modules
@@ -21,3 +18,4 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+config.bat

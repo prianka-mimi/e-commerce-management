@@ -185,7 +185,6 @@ export default function MyProductsPage() {
                             <tr>
                                 <th className="px-6 py-3.5">Product</th>
                                 <th className="px-6 py-3.5">Catalog Base</th>
-                                <th className="px-6 py-3.5">Shop Override</th>
                                 <th className="px-6 py-3.5">Customer Price</th>
                                 <th className="px-6 py-3.5">Status</th>
                                 <th className="px-6 py-3.5 text-right">Actions</th>
@@ -194,7 +193,7 @@ export default function MyProductsPage() {
                         <tbody className="divide-y divide-slate-200 text-slate-700">
                             {items.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-12 text-center text-slate-400">
+                                    <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
                                         No products listed in your shop yet.{' '}
                                         <Link
                                             to="/owner/catalog"
@@ -232,15 +231,6 @@ export default function MyProductsPage() {
                                         </td>
                                         <td className="px-6 py-4 text-xs text-slate-500">
                                             ${Number(sp.base_price).toFixed(2)}
-                                        </td>
-                                        <td className="px-6 py-4 text-xs font-medium">
-                                            {sp.shop_price !== null && sp.shop_price !== undefined ? (
-                                                <span className="text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded-md">
-                                                    ${Number(sp.shop_price).toFixed(2)}
-                                                </span>
-                                            ) : (
-                                                <span className="text-slate-400 italic">Default</span>
-                                            )}
                                         </td>
                                         <td className="px-6 py-4 font-black text-slate-900">
                                             ${Number(sp.effective_price).toFixed(2)}
@@ -323,28 +313,18 @@ export default function MyProductsPage() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-3 text-center">
+                        <div className="grid grid-cols-2 gap-3 text-center">
                             <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                                    Base Catalog
+                                    Catalog Base
                                 </span>
                                 <span className="text-base font-black text-slate-600 mt-1 block">
                                     ${Number(viewingItem.base_price).toFixed(2)}
                                 </span>
                             </div>
-                            <div className="p-3 bg-indigo-50/70 rounded-xl border border-indigo-100">
-                                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block">
-                                    Your Custom Price
-                                </span>
-                                <span className="text-base font-black text-indigo-700 mt-1 block">
-                                    {viewingItem.shop_price !== null && viewingItem.shop_price !== undefined
-                                        ? `$${Number(viewingItem.shop_price).toFixed(2)}`
-                                        : 'Default'}
-                                </span>
-                            </div>
                             <div className="p-3 bg-emerald-50/70 rounded-xl border border-emerald-100">
                                 <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider block">
-                                    Effective Customer
+                                    Selling Price
                                 </span>
                                 <span className="text-base font-black text-emerald-700 mt-1 block">
                                     ${Number(viewingItem.effective_price).toFixed(2)}
